@@ -4,13 +4,11 @@ const port = 3000;
 const connectDB = require('./config/database');
 const User = require('./models/user');
 
+// This middleware will help us parse the request body of incoming requests
+app.use(express.json());
+
 app.post('/signup', (req, res) => {
-  const user = new User({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'random@gmail.com',
-    age: 30
-  });
+  const user = new User(req.body);
   try {
     user.save();
     res.send('sign up done');
