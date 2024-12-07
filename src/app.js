@@ -17,6 +17,54 @@ app.post('/signup', (req, res) => {
   }
 });
 
+app.get('/user', async (req, res) => {
+  try {
+    const users = await User.find({email: req.body.email});
+    res.send(users);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+app.get('/feed', async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+app.delete('/user', async (req, res) => {
+  try {
+    const user = await User
+      .findByIdAndDelete({_id: req.body.userId});
+    if (!user) {
+      res.status(404).send('No user found');
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+app.patch('/user', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      {_id: req.body.userId},
+      req.body,
+      {returnDocument: 'after'}
+    );
+    if (!user) {
+      res.status(404).send('No user found');
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+})
+
+
 connectDB().then(() => {
   console.log('Database connected');
   app.listen(port, () => {
