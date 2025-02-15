@@ -1,13 +1,20 @@
 const express = require('express');
-const app = express();
-const port = 3000;
 const connectDB = require('./config/database');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+
 const {validateSignUpData} = require('./utils/validations');
+
+const app = express();
+const port = 3000;
 
 // This middleware will help us parse the request body of incoming requests
 app.use(express.json());
+
+// This middleware will help us parse the cookies in the incoming requests
+app.use(cookieParser());
 
 app.post("/login", async (req, res) => {
   try {
@@ -21,6 +28,12 @@ app.post("/login", async (req, res) => {
     if (!isPasswordValid) {
       throw new Error("Invalid credentials")
     }
+
+    // Create a jwt token 
+    const token = jwt.sign({_id: user._id}, "RandomSecret@123");
+
+    // Add the token to the cookie and send it back to the user
+    res.cookie("token", token);
     
     res.send("Login successful");
   }
@@ -61,6 +74,26 @@ app.get('/user', async (req, res) => {
     res.status(400).send(err);
   }
 });
+
+app.get("/profile", async (req, res) => {
+  try {
+    const token = req.cookies?.token;
+    if (!token) {
+      throw new Error("Unauthorized");
+    }
+
+    const decoded = jwt.verify(token, "RandomSecret@123");
+
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+})
+
 
 app.get('/feed', async (req, res) => {
   try {
