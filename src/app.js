@@ -3,9 +3,9 @@ const connectDB = require('./config/database');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
 
 const {validateSignUpData} = require('./utils/validations');
+const {userAuth} = require('./middlewares/auth');
 
 const app = express();
 const port = 3000;
@@ -24,13 +24,13 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Invalid credentials")
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.validatePassword(password);
     if (!isPasswordValid) {
       throw new Error("Invalid credentials")
     }
 
-    // Create a jwt token 
-    const token = jwt.sign({_id: user._id}, "RandomSecret@123");
+    // Getting the JWT token using the getJwt method
+    const token = user.getJwt();
 
     // Add the token to the cookie and send it back to the user
     res.cookie("token", token);
@@ -66,25 +66,10 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.get('/user', async (req, res) => {
+app.get("/profile",userAuth, async (req, res) => {
   try {
-    const users = await User.find({email: req.body.email});
-    res.send(users);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
 
-app.get("/profile", async (req, res) => {
-  try {
-    const token = req.cookies?.token;
-    if (!token) {
-      throw new Error("Unauthorized");
-    }
-
-    const decoded = jwt.verify(token, "RandomSecret@123");
-
-    const user = await User.findById(decoded._id);
+    const user = req.user;
     if (!user) {
       throw new Error("User does not exist");
     }
@@ -94,68 +79,18 @@ app.get("/profile", async (req, res) => {
   }
 })
 
-
-app.get('/feed', async (req, res) => {
+app.get("/sendConnectionRequest",userAuth, async (req, res) => {
   try {
-    const users = await User.find({});
-    res.send(users);
-  } catch (err) {
-    res.status(400).send(err);
-  }
-});
-
-app.delete('/user', async (req, res) => {
-  try {
-    const user = await User
-      .findByIdAndDelete({_id: req.body.userId});
+    const user = req.user;
     if (!user) {
-      res.status(404).send('No user found');
+      throw new Error("User does not exist");
     }
-    res.send(user);
+    res.send(user.firstName + " sent a connection request");
   } catch (err) {
-    res.status(400).send(err);
-  }
-});
-
-app.patch('/user/:userId', async (req, res) => {
-  try {
-    const userId = req.params?.userId
-
-    // These are the custom validations for the fields that can be updated
-    ALLOWED_UPDATES = new Set(['photoUrl', 'about', 'gender', 'skills']);
-    const isUpdateAllowed = Object.keys(req.body).every((key) => {
-      return ALLOWED_UPDATES.has(key);
-    });
-
-    if (!isUpdateAllowed) {
-      return res.status(400).send('Invalid field for update');
-    }
-
-    if (req.body.skills) {
-      if (!Array.isArray(req.body.skills)) {
-        return res.status(400).send('Skills should be an array');
-      } 
-      else if (req.body.skills.some((skill) => typeof skill !== 'string')) {
-        return res.status(400).send('Skills should be an array of strings');
-      } 
-      else if (req.body.skills.length > 5) {
-         throw res.status(400).send('Skills should not be more than 5');
-      }
-    }
-
-    const user = await User.findByIdAndUpdate(
-      {_id: userId},
-      req.body,
-      {returnDocument: 'after', runValidators: true}
-    );
-    if (!user) {
-      return res.status(404).send('No user found');
-    }
-    res.send(user);
-  } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send(err.message);
   }
 })
+
 
 
 connectDB().then(() => {
