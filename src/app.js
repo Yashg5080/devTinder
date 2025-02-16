@@ -16,80 +16,13 @@ app.use(express.json());
 // This middleware will help us parse the cookies in the incoming requests
 app.use(cookieParser());
 
-app.post("/login", async (req, res) => {
-  try {
-    const {email, password} = req.body;
-    const user = await User.findOne({email});
-    
-    if (!user) {
-      throw new Error("Invalid credentials")
-    }
-    const isPasswordValid = await user.validatePassword(password);
-    if (!isPasswordValid) {
-      throw new Error("Invalid credentials")
-    }
+const authRouter = require('./routes/auth');
+const profileRouter = require('./routes/profile');
+const requestRouter = require('./routes/request');
 
-    // Getting the JWT token using the getJwt method
-    const token = user.getJwt();
-
-    // Add the token to the cookie and send it back to the user
-    res.cookie("token", token);
-    
-    res.send("Login successful");
-  }
-  catch (err) {
-    res.status(400).send(err.message);
-  }
-}); 
-    
-
-app.post('/signup', async (req, res) => {
-  try {
-    // Validate the incoming request body
-    validateSignUpData(req);
-
-    // Hash the password before saving it to the database
-    const {firstName, lastName, password, email} = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword
-    });
-
-    await user.save();
-    res.send('sign up done');
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-app.get("/profile",userAuth, async (req, res) => {
-  try {
-
-    const user = req.user;
-    if (!user) {
-      throw new Error("User does not exist");
-    }
-    res.send(user);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-})
-
-app.get("/sendConnectionRequest",userAuth, async (req, res) => {
-  try {
-    const user = req.user;
-    if (!user) {
-      throw new Error("User does not exist");
-    }
-    res.send(user.firstName + " sent a connection request");
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-})
+app.use('/', authRouter);
+app.use('/', profileRouter);
+app.use('/', requestRouter);
 
 
 
