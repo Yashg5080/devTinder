@@ -19,6 +19,20 @@ const validateSignUpData = (req) => {
     }
 }
 
+const validateEditProfileData = (req) => {
+    const allowedUpdated = new Set(['photoUrl', 'gender', 'age', 'about', "skills"])
+    const isUpdateAllowed = Object.keys(req.body).every((update) =>
+         allowedUpdated.has(update));
+
+    if (!isUpdateAllowed) {
+        throw new Error('Invalid field for update')
+    }
+    if (req.body.age && (req.body.age < 18 || req.body.age > 100)) {
+        throw new Error('Invalid age')
+    }
+}
+
 module.exports = {
-    validateSignUpData
+    validateSignUpData,
+    validateEditProfileData
 };
