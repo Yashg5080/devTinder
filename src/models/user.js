@@ -47,11 +47,9 @@ const schema = mongoose.Schema({
     },
     gender: {
         type: String,
-        validate(value) {
-            if (!["male", "female", "other"].includes(value)) {
-                throw new Error("Invalid Gender")
-            }
-            return value;
+        enum: {
+            values:["male", "female", "others"],
+            message: "{VALUE} is not supported"
         },
     },
     photoUrl: {
