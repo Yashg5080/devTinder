@@ -27,7 +27,20 @@ router.post("/login", async (req, res) => {
       // Add the token to the cookie and send it back to the user
       res.cookie("token", token);
       
-      res.send("Login successful");
+      res.json({
+        message: "Logged in successfully",
+        data: {
+          user: {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            age: user.age,
+            photoUrl: user.photoUrl,
+            about: user.about,
+            skills: user.skills,
+          }
+        }
+      });
     }
     catch (err) {
       res.status(400).send(err.message);

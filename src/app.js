@@ -3,9 +3,8 @@ const connectDB = require('./config/database');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
-const {validateSignUpData} = require('./utils/validations');
-const {userAuth} = require('./middlewares/auth');
 
 const app = express();
 const port = 3000;
@@ -15,6 +14,11 @@ app.use(express.json());
 
 // This middleware will help us parse the cookies in the incoming requests
 app.use(cookieParser());
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 
 const authRouter = require('./routes/auth');
 const profileRouter = require('./routes/profile');
