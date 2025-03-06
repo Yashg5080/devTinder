@@ -12,13 +12,16 @@ router.get("/profile/view",userAuth, async (req, res) => {
     if (!user) {
       throw new Error("User does not exist");
     }
-    res.send(user);
+    res.json({
+      message: "User fetched successfully",
+      data: user,
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }
 })
 
-router.get("/profile/edit",userAuth, async (req, res) => {
+router.patch("/profile/edit",userAuth, async (req, res) => {
   try {
     validateEditProfileData(req);
 

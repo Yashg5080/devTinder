@@ -20,7 +20,7 @@ const validateSignUpData = (req) => {
 }
 
 const validateEditProfileData = (req) => {
-    const allowedUpdated = new Set(['photoUrl', 'gender', 'age', 'about', "skills"])
+    const allowedUpdated = new Set(['photoUrl', 'gender', 'age', 'about', "skills","firstName","lastName"]);
     const isUpdateAllowed = Object.keys(req.body).every((update) =>
          allowedUpdated.has(update));
 

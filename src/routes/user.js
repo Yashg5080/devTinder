@@ -1,7 +1,9 @@
-const router = require("express").Router();
-const User = require("../models/user");
+const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequests");
+const User = require("../models/user");
+
+const router = express.Router();
 
 router.get("/user/requests", userAuth, async (req, res) => {
   try {
@@ -78,7 +80,10 @@ router.get("/user/feed", userAuth, async (req, res) => {
 
     const users = await User.find({
       _id: { $nin: [...hideUsersFromFeed, user._id] },
-    }).select("firstName lastName age").skip(skip).limit(limit);
+    })
+      .select("firstName lastName age skills gender photoUrl about")
+      .skip(skip)
+      .limit(limit);
 
     res.json({
       message: "Data fetched successfully",
