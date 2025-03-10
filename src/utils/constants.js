@@ -1,0 +1,1 @@
+export const allowedFieldsForSending = "firstName lastName age gender about skills photoUrl"

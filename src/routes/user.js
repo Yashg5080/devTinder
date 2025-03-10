@@ -2,6 +2,7 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequests");
 const User = require("../models/user");
+const { allowedFieldsForSending } = require("../utils/constants");
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get("/user/requests", userAuth, async (req, res) => {
     const requests = await ConnectionRequest.find({
       receiverId: user._id,
       status: "interested",
-    }).populate("senderId", "firstName lastName age gender about skills");
+    }).populate("senderId", allowedFieldsForSending);
 
     res.json({
       message: "Data fetched successfully",
@@ -33,8 +34,8 @@ router.get("/user/connections", userAuth, async (req, res) => {
         { senderId: user._id, status: "accepted" },
       ],
     })
-      .populate("senderId", "firstName lastName age")
-      .populate("receiverId", "firstName lastName age");
+      .populate("senderId", allowedFieldsForSending)
+      .populate("receiverId", allowedFieldsForSending);
 
     const data = connections.map((connection) => {
       if (connection.senderId._id.toString() === user._id.toString()) {
