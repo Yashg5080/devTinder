@@ -51,29 +51,45 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    // Validate the incoming request body
-    validateSignUpData(req);
+    const { firstName, lastName, email, password } = req.body;
 
-    // Hash the password before saving it to the database
-    const { firstName, lastName, password, email, photoUrl, age, gender, about } =
-      req.body;
+    // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ 
+    const user = new User({
       firstName,
       lastName,
       email,
       password: hashedPassword,
-      photoUrl,
-      age,
-      gender,
-      about
     });
 
+    // Getting the JWT token using the getJwt method
+    const token = user.getJwt();
+
+    // Add the token to the cookie and send it back to the user
+    res.cookie("token", token);
+
     await user.save();
-    res.send("sign up done");
+
+    res.status(200).json({
+      message: "User registered successfully",
+      data: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      },
+    });
   } catch (err) {
-    res.status(400).send(err.message);
+    if (err.code === 11000) {
+      // Handle duplicate key error
+      res.status(400).json({
+        message: "Email already exists. Please use a different email.",
+      });
+    } else {
+      res.status(500).json({
+        message: err.message,
+      });
+    }
   }
 });
 
