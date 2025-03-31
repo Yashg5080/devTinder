@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://dev-tinder-1j6hnl23z-yash-guptas-projects-2c4fc14e.vercel.app'],
   credentials: true,
 }));
 
