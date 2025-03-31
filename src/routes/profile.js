@@ -5,7 +5,7 @@ const {validateEditProfileData} = require('../utils/validations');
 
 const router = express.Router();
 
-router.get("/profile/view",userAuth, async (req, res) => {
+router.get("/view",userAuth, async (req, res) => {
   try {
 
     const user = req.user;
@@ -21,7 +21,7 @@ router.get("/profile/view",userAuth, async (req, res) => {
   }
 })
 
-router.patch("/profile/edit",userAuth, async (req, res) => {
+router.patch("/edit",userAuth, async (req, res) => {
   try {
     validateEditProfileData(req);
 

@@ -6,7 +6,7 @@ const { allowedFieldsForSending } = require("../utils/constants");
 
 const router = express.Router();
 
-router.get("/user/requests", userAuth, async (req, res) => {
+router.get("/requests", userAuth, async (req, res) => {
   try {
     const user = req.user;
 
@@ -24,7 +24,7 @@ router.get("/user/requests", userAuth, async (req, res) => {
   }
 });
 
-router.get("/user/connections", userAuth, async (req, res) => {
+router.get("/connections", userAuth, async (req, res) => {
   try {
     const user = req.user;
 
@@ -53,7 +53,7 @@ router.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
-router.get("/user/feed", userAuth, async (req, res) => {
+router.get("/feed", userAuth, async (req, res) => {
   try {
     const user = req.user;
     const page = parseInt(req.query.page) || 1;
