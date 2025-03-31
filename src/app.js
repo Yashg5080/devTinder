@@ -16,8 +16,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
+  origin: ['http://localhost:5173', 'https://dev-tinder-ui-sandy.vercel.app'], // Add your frontend's domain here
+  credentials: true, // Allow cookies and credentials
 }));
 
 const authRouter = require('./routes/auth');

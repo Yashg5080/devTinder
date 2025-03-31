@@ -4,7 +4,8 @@
   "description": "devs can connect",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app.js"
+    "start": "node src/app.js",
+    "vercel-build": "npm install"
   },
   "author": "Yash Gupta",
   "license": "ISC",
@@ -16,5 +17,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.2",
     "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "vercel": "^41.4.1"
   }
 }
