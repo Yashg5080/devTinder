@@ -1,14 +1,9 @@
 {
   "name": "dev_tinder",
   "version": "1.0.0",
-  "description": "devs can connect",
-  "main": "index.js",
   "scripts": {
-    "start": "node src/app.js",
-    "vercel-build": "npm install"
+    "start": "node src/app.js"
   },
-  "author": "Yash Gupta",
-  "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
@@ -18,8 +13,5 @@
     "mongoose": "^8.8.2",
     "serverless-http": "^3.2.0",
     "validator": "^13.12.0"
-  },
-  "devDependencies": {
-    "vercel": "^41.4.1"
   }
 }
