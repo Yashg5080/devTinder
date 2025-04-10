@@ -1,13 +1,11 @@
 const express = require("express");
-const connectDB = require("./config/database");
-const User = require("./models/user");
-const bcrypt = require("bcrypt");
-const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
+const connectDB = require("./config/database");
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -18,24 +16,12 @@ app.use(
 );
 
 // Routes
-const authRouter = require("./routes/auth");
-const profileRouter = require("./routes/profile");
-const requestRouter = require("./routes/request");
-const userRouter = require("./routes/user");
+app.use("/auth", require("./routes/auth"));
+app.use("/profile", require("./routes/profile"));
+app.use("/request", require("./routes/request"));
+app.use("/user", require("./routes/user"));
 
-app.use("/auth", authRouter);
-app.use("/profile", profileRouter);
-app.use("/request", requestRouter);
-app.use("/user", userRouter);
+// No app.listen here!
+connectDB(); // you can make connectDB optional or mock it for deployment
 
-// Connect DB (optional: you can move this to api/index.js for more control)
-connectDB()
-  .then(() => {
-    console.log("Database connected");
-  })
-  .catch((err) => {
-    console.error(err);
-  });
-
-// ❗️No app.listen() here
 module.exports = app;
