@@ -28,7 +28,11 @@ router.post("/login", async (req, res) => {
     const token = user.getJwt();
 
     // Add the token to the cookie and send it back to the user
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "none", // Allow cross-origin cookies
+    });
 
     res.json({
       message: "Logged in successfully",
@@ -67,7 +71,11 @@ router.post("/signup", async (req, res) => {
     const token = user.getJwt();
 
     // Add the token to the cookie and send it back to the user
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "none", // Allow cross-origin cookies
+    });
 
     await user.save();
 
