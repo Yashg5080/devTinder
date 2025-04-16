@@ -10,7 +10,11 @@ const router = express.Router();
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("Login Request Body:", req.body); // Log the request body
     const user = await User.findOne({ email });
+    const users = await User.find(); // Fetch all users from the database
+    console.log("All Users:", users);
+    console.log(user);
 
     if (!user) {
       return res.status(401).json({
@@ -107,7 +111,11 @@ router.post("/logout", async (req, res) => {
     // res.cookie('token', null, {
     //     expires: new Date(Date.now())
     // });
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "none", // Allow cross-origin cookies
+    });
     res.send("Logged out successfully");
   } catch (err) {
     res.status(400).send(err.message);
